@@ -1,0 +1,160 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SnapSpend - interactive prototype</title>
+<style>
+:root{--ink:#1c1c1e;--muted:#8e8e93;--line:#d1d1d6;--accent:#0a84ff;--danger:#ff3b30;--fill:#f2f2f7;--bg:#ffffff}
+body{margin:0;background:#e9ebef;font-family:-apple-system,'Helvetica Neue',sans-serif;display:flex;flex-direction:column;align-items:center}
+h1{font-size:16px;margin:16px 0 4px;color:#1c1c1e} p{margin:0 0 14px;font-size:12px;color:#6b6b6b}
+.stage{position:relative;width:260px;height:560px;transform:scale(1.25);transform-origin:top center;margin-bottom:160px}
+
+.phone{position:absolute;width:260px;height:560px;border:3px solid var(--ink);border-radius:30px;background:var(--bg);overflow:hidden;box-sizing:border-box}
+.phone .notch{position:absolute;top:8px;left:95px;width:70px;height:16px;border-radius:9px;background:var(--ink)}
+.cap{position:absolute;font-size:17px;font-weight:700;text-align:center;width:260px}
+.scr{position:absolute;top:30px;left:0;right:0;bottom:0;font-size:12px;color:var(--ink)}
+.pad{padding:8px 14px}
+.center{text-align:center}
+.nav{height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1.5px solid var(--line);font-size:12px}
+.title{font-weight:700;font-size:14px;flex:1;text-align:center}
+.back,.save{color:var(--accent)} .plus{font-size:20px;color:var(--accent)}
+.logo{font-size:40px;margin-top:30px}
+.h1{font-size:22px;font-weight:700;margin:6px 0}
+.h2{font-size:16px;font-weight:700;margin-top:8px}
+.muted{color:var(--muted)} .small{font-size:10px}
+.field{border:1.5px solid var(--line);border-radius:8px;height:30px;line-height:30px;padding:0 8px;margin:8px 0;text-align:left;color:var(--muted)}
+.field.val{color:var(--ink)}
+.btn{background:var(--accent);color:#fff;border-radius:9px;height:34px;line-height:34px;text-align:center;font-weight:700;margin:12px 0}
+.btn.danger{background:var(--danger)}
+.link{color:var(--accent);font-size:11px}
+.foot{position:absolute;bottom:14px;left:0;right:0;font-size:10px;color:var(--muted)}
+.card{border:1.5px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--fill)}
+.big{font-size:24px;font-weight:700}
+.search{border:1.5px solid var(--line);border-radius:8px;height:24px;line-height:24px;padding:0 8px;color:var(--muted);margin-bottom:4px}
+.row{display:flex;align-items:center;border-bottom:1.5px solid var(--line);padding:6px 0;gap:8px}
+.thumb{width:28px;height:28px;border:1.5px solid var(--line);border-radius:6px;background:var(--fill)}
+.rtext{flex:1} .amt{font-weight:700}
+.note{font-size:10px;color:var(--muted);text-align:right;margin-top:4px;font-style:italic}
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:52px;border-top:1.5px solid var(--line);display:flex;background:var(--bg)}
+.tab{flex:1;text-align:center;font-size:10px;color:var(--muted);padding-top:6px}
+.tab.on{color:var(--accent);font-weight:700} .ti{display:block;font-size:16px}
+.photo{border:2px dashed var(--line);border-radius:10px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);margin-bottom:6px}
+.photo.tall{height:170px}
+.cam{font-size:26px}
+.label{font-size:11px;font-weight:700;margin-top:6px}
+.label.left{text-align:left;margin-top:16px}
+.tag{font-weight:400;font-size:9px;background:var(--fill);border:1px solid var(--line);border-radius:6px;padding:0 4px;color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.chip{border:1.5px solid var(--line);border-radius:10px;padding:1px 7px;font-size:10px}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.map{border:1.5px solid var(--line);border-radius:10px;height:90px;margin:10px 0;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--fill)}
+.chart{display:flex;align-items:flex-end;gap:10px;height:140px;border-bottom:1.5px solid var(--line);margin:8px 0 18px;padding:0 6px}
+.bar{flex:1;background:var(--accent);border-radius:4px 4px 0 0;position:relative;opacity:.8}
+.bar span{position:absolute;bottom:-15px;left:-4px;right:-4px;text-align:center;font-size:9px;color:var(--ink)}
+.progress{height:12px;border:1.5px solid var(--line);border-radius:7px;margin:6px 0;overflow:hidden}
+.progress div{height:100%;background:var(--accent)}
+.avatar{width:70px;height:70px;border-radius:35px;border:2px solid var(--line);margin:14px auto 0;font-size:40px;line-height:70px}
+
+.proto{left:0;top:0;display:none} .proto.show{display:block}
+[data-go]{cursor:pointer}
+.tap{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:rgba(255,149,0,.45);border:2px solid #ff9500;pointer-events:none;z-index:5}
+</style></head><body>
+<h1>SnapSpend - interactive prototype</h1>
+<p>Click the buttons, the rows, the + and the tab bar. Rafael Eskinazi - Z23346103</p>
+<div class="stage" id="stage"><div class="phone proto" id="s-login"><div class="notch"></div><div class="scr">
+      <div class="pad center">
+        <div class="logo">▣</div>
+        <div class="h1">SnapSpend</div>
+        <div class="muted">Snap the receipt, forget it.</div>
+        <div class="field">Email</div>
+        <div class="field">Password</div>
+        <div class="btn" data-go="expenses">Log In</div>
+        <div class="link" data-go="signup">Don't have an account? Sign up</div>
+        <div class="foot">Rafael Eskinazi - Z23346103</div>
+      </div></div></div><div class="phone proto" id="s-signup"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="back" data-go="login">‹ Back</span></div>
+      <div class="pad">
+        <div class="h1">Create account</div>
+        <div class="field">Email</div>
+        <div class="field">Password</div>
+        <div class="field">Confirm password</div>
+        <div class="btn" data-go="expenses">Create Account</div>
+      </div></div></div><div class="phone proto" id="s-expenses"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="title">Expenses</span><span class="plus" data-go="add">＋</span></div>
+      <div class="pad">
+        <div class="card total"><div class="muted">November total</div><div class="big">$412.35</div></div>
+        <div class="search">⌕ Search</div>
+        <div class="row" data-go="detail"><div class="thumb"></div>
+          <div class="rtext"><div>Publix</div><div class="muted small">Food · Nov 24</div></div>
+          <div class="amt">$23.48</div></div><div class="row" data-go="detail"><div class="thumb"></div>
+          <div class="rtext"><div>FAU Bookstore</div><div class="muted small">School · Nov 23</div></div>
+          <div class="amt">$64.99</div></div><div class="row" data-go="detail"><div class="thumb"></div>
+          <div class="rtext"><div>Shell</div><div class="muted small">Transport · Nov 22</div></div>
+          <div class="amt">$38.10</div></div><div class="row" data-go="detail"><div class="thumb"></div>
+          <div class="rtext"><div>Chipotle</div><div class="muted small">Food · Nov 21</div></div>
+          <div class="amt">$12.75</div></div><div class="row" data-go="detail"><div class="thumb"></div>
+          <div class="rtext"><div>Target</div><div class="muted small">Shopping · Nov 20</div></div>
+          <div class="amt">$41.30</div></div>
+        <div class="note">swipe left to delete</div>
+      </div><div class="tabbar"><div class="tab on" data-go="expenses"><span class="ti">▤</span>Expenses</div><div class="tab" data-go="insights"><span class="ti">◔</span>Insights</div><div class="tab" data-go="profile"><span class="ti">☺</span>Profile</div></div></div></div><div class="phone proto" id="s-add"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="back" data-go="expenses">Cancel</span><span class="title">New Expense</span><span class="save" data-go="expenses">Save</span></div>
+      <div class="pad">
+        <div class="photo"><div class="cam">◉</div>Receipt photo<div class="small muted">Take Photo · Choose from Library</div></div>
+        <div class="label">Amount <span class="tag">read from receipt</span></div>
+        <div class="field val">$23.48</div>
+        <div class="label">Merchant</div>
+        <div class="field val">Publix</div>
+        <div class="label">Category</div>
+        <div class="chips"><span class="chip on">Food</span><span class="chip">Transport</span><span class="chip">School</span><span class="chip">Shopping</span><span class="chip">Other</span></div>
+        <div class="label">Date</div>
+        <div class="field val">Nov 24, 2026</div>
+      </div></div></div><div class="phone proto" id="s-detail"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="back" data-go="expenses">‹ Expenses</span><span class="title">Publix</span></div>
+      <div class="pad">
+        <div class="photo tall">Receipt photo</div>
+        <div class="big">$23.48</div>
+        <div class="muted">Food · Nov 24, 2026</div>
+        <div class="map">Map: where it was bought</div>
+        <div class="btn danger" data-go="expenses">Delete Expense</div>
+      </div></div></div><div class="phone proto" id="s-insights"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="title">Insights</span></div>
+      <div class="pad">
+        <div class="muted">November by category</div>
+        <div class="chart"><div class="bar" style="height:80%"><span>Food</span></div><div class="bar" style="height:60%"><span>School</span></div><div class="bar" style="height:40%"><span>Trans.</span></div><div class="bar" style="height:45%"><span>Shop.</span></div><div class="bar" style="height:15%"><span>Other</span></div></div>
+        <div class="label">Monthly budget</div>
+        <div class="progress"><div style="width:69%"></div></div>
+        <div class="muted small">$412 of $600 · $188 left</div>
+        <div class="row"><div class="rtext">Food</div><div class="amt">$148.20</div></div>
+        <div class="row"><div class="rtext">School</div><div class="amt">$112.40</div></div>
+      </div><div class="tabbar"><div class="tab" data-go="expenses"><span class="ti">▤</span>Expenses</div><div class="tab on" data-go="insights"><span class="ti">◔</span>Insights</div><div class="tab" data-go="profile"><span class="ti">☺</span>Profile</div></div></div></div><div class="phone proto" id="s-profile"><div class="notch"></div><div class="scr">
+      <div class="nav"><span class="title">Profile</span></div>
+      <div class="pad center">
+        <div class="avatar">☺</div>
+        <div class="h2">Rafael Eskinazi</div>
+        <div class="muted">Z23346103</div>
+        <div class="muted small">reskinazi2015@fau.edu</div>
+        <div class="label left">Monthly budget</div>
+        <div class="field val">$600</div>
+        <div class="field val">Export month as CSV</div>
+        <div class="btn danger" data-go="login">Log Out</div>
+      </div><div class="tabbar"><div class="tab" data-go="expenses"><span class="ti">▤</span>Expenses</div><div class="tab" data-go="insights"><span class="ti">◔</span>Insights</div><div class="tab on" data-go="profile"><span class="ti">☺</span>Profile</div></div></div></div></div>
+<script>
+function show(k) {
+  document.querySelectorAll('.proto').forEach(function (s) { s.classList.toggle('show', s.id === 's-' + k); });
+}
+document.querySelectorAll('[data-go]').forEach(function (el) {
+  el.addEventListener('click', function (e) { e.stopPropagation(); show(el.dataset.go); });
+});
+// #screen or #screen@x,y (the second form draws a tap circle, used to record the gif)
+function fromHash() {
+  var h = location.hash.slice(1).split('@');
+  show(h[0] || 'login');
+  document.querySelectorAll('.tap').forEach(function (t) { t.remove(); });
+  if (h[1]) {
+    var p = h[1].split(','), t = document.createElement('div');
+    t.className = 'tap'; t.style.left = p[0] + 'px'; t.style.top = p[1] + 'px';
+    document.getElementById('stage').appendChild(t);
+  }
+}
+window.addEventListener('hashchange', fromHash);
+fromHash();
+</script>
+</body></html>
